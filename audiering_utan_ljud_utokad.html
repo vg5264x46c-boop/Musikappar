@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Audiering utan ljud</title>
+<style>
+  :root{
+    --bg:#f4f4f4;
+    --ink:#111;
+    --muted:#555;
+    --card:#fff;
+    --soft:#f1f1f1;
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:Arial,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding:clamp(10px,2vw,24px);
+    box-sizing:border-box;
+  }
+
+  .app{
+    width:min(100%,1100px);
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:minmax(240px,320px) minmax(0,1fr);
+    gap:clamp(12px,2vw,24px);
+    align-items:start;
+  }
+
+  .panel,.stage{
+    background:var(--card);
+    border-radius:clamp(14px,2vw,22px);
+    padding:clamp(14px,2vw,24px);
+    box-shadow:0 10px 28px rgba(0,0,0,.14);
+  }
+
+  .panel{
+    position:sticky;
+    top:clamp(10px,2vw,24px);
+  }
+
+  h1{
+    margin:0 0 8px;
+    font-size:clamp(22px,2.6vw,30px);
+  }
+
+  p{
+    color:var(--muted);
+    line-height:1.45;
+  }
+
+  label{
+    display:block;
+    margin-top:14px;
+    font-weight:bold;
+  }
+
+  select,input,button{
+    width:100%;
+    box-sizing:border-box;
+    margin-top:7px;
+  }
+
+  button{
+    padding:12px 14px;
+    border:2px solid var(--ink);
+    border-radius:14px;
+    background:white;
+    color:var(--ink);
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  button:hover{
+    background:var(--ink);
+    color:white;
+  }
+
+  .primary{
+    background:var(--ink);
+    color:white;
+  }
+
+  .primary:hover{
+    background:white;
+    color:var(--ink);
+  }
+
+  .sequence{
+    margin-top:clamp(20px,4vw,44px);
+    min-height:150px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:clamp(8px,1.6vw,18px);
+    flex-wrap:wrap;
+  }
+
+  .degree{
+    width:clamp(54px,8vw,86px);
+    height:clamp(54px,8vw,86px);
+    border-radius:18px;
+    border:3px solid var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(26px,4vw,42px);
+    font-weight:bold;
+    background:white;
+    transition:transform .15s ease, background .15s ease;
+  }
+
+  .degree.active{
+    background:var(--ink);
+    color:white;
+    transform:scale(1.06);
+  }
+
+  .status{
+    margin-top:24px;
+    text-align:center;
+    font-size:clamp(18px,2.4vw,24px);
+    font-weight:bold;
+    min-height:34px;
+  }
+
+  .substatus{
+    margin-top:8px;
+    text-align:center;
+    color:var(--muted);
+    min-height:24px;
+  }
+
+  .answerButtons{
+    margin-top:28px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .answerButtons button{
+    flex:1;
+    min-width:130px;
+  }
+
+  .good{
+    background:#1f7a1f;
+    color:white;
+    border-color:#1f7a1f;
+  }
+
+  .bad{
+    background:#8c2020;
+    color:white;
+    border-color:#8c2020;
+  }
+
+  .toneButtons{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+  }
+
+  .toneButtons button{
+    min-width:0;
+  }
+
+  .stats{
+    margin-top:22px;
+    padding:12px;
+    border-radius:14px;
+    background:var(--soft);
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    text-align:center;
+  }
+
+  .stat strong{
+    display:block;
+    font-size:20px;
+  }
+
+  .credit{
+    margin-top:22px;
+    font-size:12px;
+    color:#777;
+    text-align:center;
+    font-style:italic;
+  }
+
+  @media(max-width:820px){
+    .app{
+      grid-template-columns:1fr;
+    }
+    .panel{
+      position:static;
+    }
+  }
+
+  @media(max-width:520px){
+    .toneButtons{
+      grid-template-columns:repeat(4,1fr);
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="app">
+
+<section class="panel">
+<h1>Audiering utan ljud</h1>
+<p>
+Du får en ton som du etablerar som grundton.
+Audiera sedan tonplatserna och avgör sedan vilket slutton som spelas.
+</p>
+
+<label for="mode">Övningsläge</label>
+<select id="mode">
+  <option value="fit" selected>Passar / passar inte</option>
+  <option value="identify">Välj spelad slutton</option>
+</select>
+
+<label for="displayMode">Visning</label>
+<select id="displayMode">
+  <option value="all" selected>Visa alla toner samtidigt</option>
+  <option value="step">Visa ton för ton</option>
+</select>
+
+<label for="difficulty">Nivå</label>
+<select id="difficulty">
+  <option value="easy" selected>Lätt: tydliga durfragment</option>
+  <option value="medium">Mellan: fler toner och riktningar</option>
+  <option value="hard">Svår: mer instabila toner</option>
+</select>
+
+<label for="length">Antal toner</label>
+<select id="length">
+  <option value="3">3 toner</option>
+  <option value="4" selected>4 toner</option>
+  <option value="5">5 toner</option>
+  <option value="6">6 toner</option>
+</select>
+
+<label for="wait">Audieringstid: <span id="waitValue">4</span> sek</label>
+<input type="range" id="wait" min="2" max="10" value="4">
+
+<label for="tonicTime">Tonikaliseringstid: <span id="tonicTimeValue">2</span> sek</label>
+<input type="range" id="tonicTime" min="1" max="6" value="2">
+
+<label>
+  <input type="checkbox" id="showFeedback" checked style="width:auto; margin-right:8px;">
+  Visa rätt svar efter fel
+</label>
+
+<button class="primary" id="start">Ny uppgift</button>
+<button id="repeatEnding">Spela slutton igen</button>
+<button id="resetStats">Nollställ statistik</button>
+
+<div class="stats">
+  <div class="stat"><strong id="done">0</strong>försök</div>
+  <div class="stat"><strong id="correct">0</strong>rätt</div>
+  <div class="stat"><strong id="percent">0%</strong>träff</div>
+</div>
+
+<div class="credit">Marcus Löfdahl 2026 (skapad med AI)</div>
+</section>
+
+<section class="stage">
+<div class="sequence" id="sequence"></div>
+<div class="status" id="status">Tryck på “Ny uppgift”.</div>
+<div class="substatus" id="substatus"></div>
+
+<div class="answerButtons" id="fitButtons">
+  <button class="good" id="fits">Passar</button>
+  <button class="bad" id="notFits">Passar inte</button>
+</div>
+
+<div class="answerButtons toneButtons" id="toneButtons" style="display:none;">
+  <button data-tone="1">1</button>
+  <button data-tone="2">2</button>
+  <button data-tone="3">3</button>
+  <button data-tone="4">4</button>
+  <button data-tone="5">5</button>
+  <button data-tone="6">6</button>
+  <button data-tone="7">7</button>
+</div>
+</section>
+
+</main>
+
+<script>
+const sequenceDiv = document.getElementById("sequence");
+const statusDiv = document.getElementById("status");
+const substatusDiv = document.getElementById("substatus");
+const waitSlider = document.getElementById("wait");
+const waitValue = document.getElementById("waitValue");
+const tonicTimeSlider = document.getElementById("tonicTime");
+const tonicTimeValue = document.getElementById("tonicTimeValue");
+const lengthSelect = document.getElementById("length");
+const modeSelect = document.getElementById("mode");
+const displayModeSelect = document.getElementById("displayMode");
+const difficultySelect = document.getElementById("difficulty");
+const fitButtons = document.getElementById("fitButtons");
+const toneButtons = document.getElementById("toneButtons");
+
+let audioCtx = null;
+let currentFits = false;
+let currentEnding = 1;
+let currentSeq = [];
+let canAnswer = false;
+let attempts = 0;
+let correctCount = 0;
+
+const tonic = 261.63;
+const tones = {
+  1: tonic,
+  2: tonic * Math.pow(2,2/12),
+  3: tonic * Math.pow(2,4/12),
+  4: tonic * Math.pow(2,5/12),
+  5: tonic * Math.pow(2,7/12),
+  6: tonic * Math.pow(2,9/12),
+  7: tonic * Math.pow(2,11/12),
+  "1^": tonic * 2
+};
+
+function ensureAudio(){
+  if(!audioCtx){
+    audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playTone(freq,dur=0.8,delay=0){
+  ensureAudio();
+  const t = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const overtone = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const overtoneGain = audioCtx.createGain();
+
+  osc.type = "triangle";
+  overtone.type = "sine";
+  osc.frequency.value = freq;
+  overtone.frequency.value = freq * 2;
+  overtoneGain.gain.value = 0.16;
+
+  gain.gain.setValueAtTime(0.0001,t);
+  gain.gain.linearRampToValueAtTime(0.18,t+0.06);
+  gain.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+
+  osc.connect(gain);
+  overtone.connect(overtoneGain);
+  overtoneGain.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(t);
+  overtone.start(t);
+  osc.stop(t+dur+0.05);
+  overtone.stop(t+dur+0.05);
+}
+
+function randomChoice(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function sleep(ms){
+  return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+function degreePool(){
+  const d = difficultySelect.value;
+  if(d === "easy") return [1,2,3,5,6];
+  if(d === "medium") return [1,2,3,4,5,6];
+  return [1,2,3,4,5,6,7];
+}
+
+function makeSequence(){
+  const len = Number(lengthSelect.value);
+  const pool = degreePool();
+  const seq = [1];
+
+  while(seq.length < len){
+    let next = randomChoice(pool);
+    if(difficultySelect.value === "easy" && seq.length > 1){
+      const prev = seq[seq.length-1];
+      const stepOptions = pool.filter(x => Math.abs(x-prev) <= 2 && x !== prev);
+      next = randomChoice(stepOptions.length ? stepOptions : pool);
+    }
+    seq.push(next);
+  }
+  return seq;
+}
+
+function makeEnding(){
+  currentFits = Math.random() < 0.5;
+  const d = difficultySelect.value;
+
+  if(currentFits){
+    currentEnding = randomChoice(d === "hard" ? [1,3,5,6] : [1,3,5]);
+  } else {
+    currentEnding = randomChoice(d === "hard" ? [2,4,6,7] : [2,4,7]);
+  }
+}
+
+async function drawSequence(seq){
+  sequenceDiv.innerHTML = "";
+
+  if(displayModeSelect.value === "all"){
+    seq.forEach(n=>addDegree(n,false));
+    return;
+  }
+
+  for(const n of seq){
+    const el = addDegree(n,true);
+    await sleep(650);
+    el.classList.remove("active");
+  }
+}
+
+function addDegree(n,active){
+  const div = document.createElement("div");
+  div.className = "degree" + (active ? " active" : "");
+  div.textContent = n;
+  sequenceDiv.appendChild(div);
+  return div;
+}
+
+async function newTask(){
+  canAnswer = false;
+  sequenceDiv.innerHTML = "";
+  substatusDiv.textContent = "";
+  statusDiv.textContent = "Lyssna på tonikan och etablera tonarten...";
+
+  playTone(tones[1],1.1);
+  await sleep(Number(tonicTimeSlider.value) * 1000);
+
+  currentSeq = makeSequence();
+  makeEnding();
+
+  statusDiv.textContent = "Audiera tonplatserna tyst inom dig...";
+  await drawSequence(currentSeq);
+
+  await sleep(Number(waitSlider.value) * 1000);
+
+  statusDiv.textContent = "Lyssna på sluttonen...";
+  playTone(tones[currentEnding],1);
+
+  await sleep(1100);
+  canAnswer = true;
+
+  if(modeSelect.value === "fit"){
+    statusDiv.textContent = "Passar sluttonen?";
+    substatusDiv.textContent = "Bedöm om tonen känns som en rimlig fortsättning eller avslutning.";
+  } else {
+    statusDiv.textContent = "Vilken slutton spelades?";
+    substatusDiv.textContent = "Välj tonplats 1–7.";
+  }
+}
+
+function repeatEnding(){
+  if(!currentEnding) return;
+  playTone(tones[currentEnding],1);
+}
+
+function answer(value){
+  if(!canAnswer){
+    statusDiv.textContent = "Starta en ny uppgift först.";
+    return;
+  }
+
+  let ok = false;
+
+  if(modeSelect.value === "fit"){
+    ok = Boolean(value) === currentFits;
+  } else {
+    ok = Number(value) === currentEnding;
+  }
+
+  attempts++;
+  if(ok) correctCount++;
+  updateStats();
+
+  if(ok){
+    statusDiv.textContent = "Rätt!";
+    substatusDiv.textContent = "Bra audiation.";
+  } else {
+    statusDiv.textContent = "Inte riktigt.";
+    substatusDiv.textContent = document.getElementById("showFeedback").checked
+      ? "Sluttonen var tonplats " + currentEnding + ". Den räknades som " + (currentFits ? "passande." : "inte passande.")
+      : "Pröva nästa uppgift.";
+  }
+
+  canAnswer = false;
+}
+
+function updateStats(){
+  document.getElementById("done").textContent = attempts;
+  document.getElementById("correct").textContent = correctCount;
+  document.getElementById("percent").textContent = attempts ? Math.round(correctCount/attempts*100) + "%" : "0%";
+}
+
+function resetStats(){
+  attempts = 0;
+  correctCount = 0;
+  updateStats();
+}
+
+function updateModeUI(){
+  const identify = modeSelect.value === "identify";
+  fitButtons.style.display = identify ? "none" : "flex";
+  toneButtons.style.display = identify ? "grid" : "none";
+}
+
+waitSlider.addEventListener("input",()=>waitValue.textContent = waitSlider.value);
+tonicTimeSlider.addEventListener("input",()=>tonicTimeValue.textContent = tonicTimeSlider.value);
+modeSelect.addEventListener("change",updateModeUI);
+
+document.getElementById("start").addEventListener("click",newTask);
+document.getElementById("repeatEnding").addEventListener("click",repeatEnding);
+document.getElementById("resetStats").addEventListener("click",resetStats);
+document.getElementById("fits").addEventListener("click",()=>answer(true));
+document.getElementById("notFits").addEventListener("click",()=>answer(false));
+
+document.querySelectorAll("#toneButtons button").forEach(btn=>{
+  btn.addEventListener("click",()=>answer(btn.dataset.tone));
+});
+
+updateModeUI();
+updateStats();
+</script>
+
+</body>
+</html>
