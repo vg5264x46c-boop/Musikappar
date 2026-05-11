@@ -1,193 +1,104 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Musikträning</title>
-  <style>
-    :root{
-      --bg:#f4f4f4;
-      --card:#ffffff;
-      --text:#111111;
-      --muted:#555555;
-      --border:#111111;
-      --shadow:0 8px 24px rgba(0,0,0,.14);
-      --radius:18px;
-    }
-
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      background:var(--bg);
-      font-family:Arial,sans-serif;
-      color:var(--text);
-      padding:clamp(8px,2vw,24px);
-      min-height:100vh;
-      overflow:hidden;
-    }
-
-    .shell{
-      width:min(100%,1300px);
-      height:calc(100vh - clamp(16px,4vw,48px));
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:minmax(220px,300px) minmax(0,1fr);
-      gap:clamp(12px,2vw,24px);
-    }
-
-    .panel,
-    .viewer{
-      background:var(--card);
-      border-radius:clamp(12px,2vw,var(--radius));
-      box-shadow:var(--shadow);
-    }
-
-    .panel{
-      padding:clamp(14px,2vw,20px);
-      overflow:auto;
-    }
-
-    h1{
-      font-size:clamp(24px,3vw,34px);
-      margin:0 0 8px;
-    }
-
-    p{
-      color:var(--muted);
-      line-height:1.45;
-      margin:0 0 16px;
-    }
-
-    .nav{
-      display:grid;
-      gap:10px;
-      margin-top:18px;
-    }
-
-    button,
-    a.openLink{
-      width:100%;
-      padding:clamp(10px,1.4vw,13px);
-      border:2px solid var(--border);
-      background:white;
-      color:var(--text);
-      border-radius:12px;
-      font-size:clamp(14px,1.5vw,16px);
-      font-weight:bold;
-      cursor:pointer;
-      text-align:center;
-      text-decoration:none;
-      display:block;
-    }
-
-    button:hover,
-    a.openLink:hover{
-      background:#111;
-      color:white;
-    }
-
-    button.active{
-      background:#111;
-      color:white;
-    }
-
-    .viewer{
-      min-width:0;
-      overflow:hidden;
-      position:relative;
-    }
-
-    iframe{
-      width:100%;
-      height:100%;
-      border:0;
-      display:none;
-      background:white;
-    }
-
-    iframe.active{
-      display:block;
-    }
-
-    .credit{
-      margin-top:18px;
-      padding-top:14px;
-      border-top:1px solid #ddd;
-      font-size:12px;
-      font-style:italic;
-      color:#666;
-      text-align:center;
-    }
-
-    .hint{
-      margin-top:16px;
-      font-size:13px;
-      color:#666;
-    }
-
-    @media(max-width:820px){
-      body{
-        overflow:auto;
-      }
-
-      .shell{
-        height:auto;
-        min-height:calc(100vh - 16px);
-        grid-template-columns:1fr;
-      }
-
-      .viewer{
-        height:78vh;
-        min-height:560px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Musikappar</title>
+<style>
+body{
+  margin:0;
+  background:#f4f4f4;
+  font-family:Arial,sans-serif;
+  color:#111;
+  min-height:100vh;
+  padding:20px;
+  box-sizing:border-box;
+}
+.wrapper{
+  width:min(100%,1100px);
+  margin:0 auto;
+}
+h1{
+  font-size:clamp(28px,4vw,42px);
+}
+.intro{
+  color:#555;
+  line-height:1.5;
+  margin-bottom:28px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+.card{
+  background:white;
+  border-radius:22px;
+  padding:24px;
+  box-shadow:0 10px 28px rgba(0,0,0,.14);
+}
+.card h2{
+  margin-top:0;
+}
+.card p{
+  color:#555;
+  line-height:1.45;
+}
+.button{
+  display:inline-block;
+  margin-top:14px;
+  background:#111;
+  color:white;
+  text-decoration:none;
+  padding:14px 18px;
+  border-radius:14px;
+  font-weight:bold;
+}
+.footer{
+  margin-top:40px;
+  text-align:center;
+  font-size:12px;
+  color:#777;
+}
+</style>
 </head>
 <body>
-  <main class="shell">
-    <aside class="panel">
-      <h1>Musikträning</h1>
-      <p>Välj övning. Varje övning ligger som en egen HTML-fil, men öppnas här i samma startsida.</p>
 
-      <nav class="nav" aria-label="Övningar">
-        <button class="active" data-target="tonplatser">Tonplatser</button>
-        <button data-target="rytmceller">Rytmceller</button>
-      </nav>
+<div class="wrapper">
 
-      <p class="hint">Tips: om en övning känns trång i Canvas kan du öppna den i egen flik.</p>
+<h1>Musikappar</h1>
 
-      <a class="openLink" id="openCurrent" href="tonplatser.html" target="_blank" rel="noopener">Öppna vald övning i egen flik</a>
+<p class="intro">
+Interaktiva appar för gehör, audiering, rytmläsning och tonal förankring.
+</p>
 
-      <p class="credit">Marcus Löfdahl 2026<br>(skapad med AI)</p>
-    </aside>
+<div class="grid">
 
-    <section class="viewer" aria-label="Vald övning">
-      <iframe class="active" id="tonplatser" src="tonplatser.html" title="Tonplatser"></iframe>
-      <iframe id="rytmceller" src="rytmceller.html" title="Rytmceller"></iframe>
-    </section>
-  </main>
+<div class="card">
+<h2>Tonplatser</h2>
+<p>Träna melodiminne och tonal förankring genom att lyssna och klicka in rätt tonplatser.</p>
+<a class="button" href="tonplatser.html">Öppna app</a>
+</div>
 
-  <script>
-    const buttons = document.querySelectorAll('button[data-target]');
-    const frames = document.querySelectorAll('iframe');
-    const openCurrent = document.getElementById('openCurrent');
+<div class="card">
+<h2>Rytmceller</h2>
+<p>Träna rytmläsning och eye-hand-span med visuella rytmceller.</p>
+<a class="button" href="rytmceller.html">Öppna app</a>
+</div>
 
-    const links = {
-      tonplatser: 'tonplatser.html',
-      rytmceller: 'rytmceller.html'
-    };
+<div class="card">
+<h2>Audiering utan ljud</h2>
+<p>Du får en ton som du etablerar som grundton. Audiera sedan tonplatserna och avgör vilket slutton som spelas.</p>
+<a class="button" href="audiering_utan_ljud.html">Öppna app</a>
+</div>
 
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const target = button.dataset.target;
+</div>
 
-        buttons.forEach((b) => b.classList.toggle('active', b === button));
-        frames.forEach((frame) => frame.classList.toggle('active', frame.id === target));
+<div class="footer">
+Marcus Löfdahl 2026
+</div>
 
-        openCurrent.href = links[target];
-      });
-    });
-  </script>
+</div>
+
 </body>
 </html>
