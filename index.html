@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Musikträning</title>
+  <style>
+    :root{
+      --bg:#f4f4f4;
+      --card:#ffffff;
+      --text:#111111;
+      --muted:#555555;
+      --border:#111111;
+      --shadow:0 8px 24px rgba(0,0,0,.14);
+      --radius:18px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      font-family:Arial,sans-serif;
+      color:var(--text);
+      padding:clamp(8px,2vw,24px);
+      min-height:100vh;
+      overflow:hidden;
+    }
+
+    .shell{
+      width:min(100%,1300px);
+      height:calc(100vh - clamp(16px,4vw,48px));
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:minmax(220px,300px) minmax(0,1fr);
+      gap:clamp(12px,2vw,24px);
+    }
+
+    .panel,
+    .viewer{
+      background:var(--card);
+      border-radius:clamp(12px,2vw,var(--radius));
+      box-shadow:var(--shadow);
+    }
+
+    .panel{
+      padding:clamp(14px,2vw,20px);
+      overflow:auto;
+    }
+
+    h1{
+      font-size:clamp(24px,3vw,34px);
+      margin:0 0 8px;
+    }
+
+    p{
+      color:var(--muted);
+      line-height:1.45;
+      margin:0 0 16px;
+    }
+
+    .nav{
+      display:grid;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    button,
+    a.openLink{
+      width:100%;
+      padding:clamp(10px,1.4vw,13px);
+      border:2px solid var(--border);
+      background:white;
+      color:var(--text);
+      border-radius:12px;
+      font-size:clamp(14px,1.5vw,16px);
+      font-weight:bold;
+      cursor:pointer;
+      text-align:center;
+      text-decoration:none;
+      display:block;
+    }
+
+    button:hover,
+    a.openLink:hover{
+      background:#111;
+      color:white;
+    }
+
+    button.active{
+      background:#111;
+      color:white;
+    }
+
+    .viewer{
+      min-width:0;
+      overflow:hidden;
+      position:relative;
+    }
+
+    iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:none;
+      background:white;
+    }
+
+    iframe.active{
+      display:block;
+    }
+
+    .credit{
+      margin-top:18px;
+      padding-top:14px;
+      border-top:1px solid #ddd;
+      font-size:12px;
+      font-style:italic;
+      color:#666;
+      text-align:center;
+    }
+
+    .hint{
+      margin-top:16px;
+      font-size:13px;
+      color:#666;
+    }
+
+    @media(max-width:820px){
+      body{
+        overflow:auto;
+      }
+
+      .shell{
+        height:auto;
+        min-height:calc(100vh - 16px);
+        grid-template-columns:1fr;
+      }
+
+      .viewer{
+        height:78vh;
+        min-height:560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <aside class="panel">
+      <h1>Musikträning</h1>
+      <p>Välj övning. Varje övning ligger som en egen HTML-fil, men öppnas här i samma startsida.</p>
+
+      <nav class="nav" aria-label="Övningar">
+        <button class="active" data-target="tonplatser">Tonplatser</button>
+        <button data-target="rytmceller">Rytmceller</button>
+      </nav>
+
+      <p class="hint">Tips: om en övning känns trång i Canvas kan du öppna den i egen flik.</p>
+
+      <a class="openLink" id="openCurrent" href="tonplatser.html" target="_blank" rel="noopener">Öppna vald övning i egen flik</a>
+
+      <p class="credit">Marcus Löfdahl 2026<br>(skapad med AI)</p>
+    </aside>
+
+    <section class="viewer" aria-label="Vald övning">
+      <iframe class="active" id="tonplatser" src="tonplatser.html" title="Tonplatser"></iframe>
+      <iframe id="rytmceller" src="rytmceller.html" title="Rytmceller"></iframe>
+    </section>
+  </main>
+
+  <script>
+    const buttons = document.querySelectorAll('button[data-target]');
+    const frames = document.querySelectorAll('iframe');
+    const openCurrent = document.getElementById('openCurrent');
+
+    const links = {
+      tonplatser: 'tonplatser.html',
+      rytmceller: 'rytmceller.html'
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.target;
+
+        buttons.forEach((b) => b.classList.toggle('active', b === button));
+        frames.forEach((frame) => frame.classList.toggle('active', frame.id === target));
+
+        openCurrent.href = links[target];
+      });
+    });
+  </script>
+</body>
+</html>
